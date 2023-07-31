@@ -70,3 +70,7 @@ button:hover {
 .clear {
     background: #F67280;
 }
+
+.multiply > div {
+    transform: rotate(45deg);
+}
