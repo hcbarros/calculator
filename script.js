@@ -7,35 +7,31 @@ onload = reset
 
 
 function getNumber(number) {
-    numberOne = numberOne.replace(" ", "")
     if(operator == null) {
         numberOne = numberOne == '0' ? number : numberOne + number
         document.getElementsByClassName('response')[0].textContent = numberOne
     }
     else {
-        numberTwo = numberTwo == '' ? number : numberTwo + number
-        document.getElementsByClassName('response')[0].textContent = `${numberOne} ${operator} ${numberTwo}`
+        numberTwo = numberTwo == '' || numberTwo == '0' ? number : numberTwo + number
+        document.getElementsByClassName('response')[0].textContent = numberTwo
     }
 }
 
 
 function getOperator(operatorParam) {
-    if(operator != null) {
-        operate()
-    }
-    else {
-        operator = operatorParam
-        document.getElementsByClassName('response')[0].textContent = numberOne + " " + operator   
-    }
+    operate()
+    operator = operatorParam
 }
 
 
 function getDot() {
     if(operator == null && !numberOne.includes(".")) {
         numberOne += "."
+        document.getElementsByClassName('response')[0].textContent = numberOne
     }
     else if(operator != null && !numberTwo.includes(".")) {
         numberTwo += "."
+        document.getElementsByClassName('response')[0].textContent = numberTwo
     }
 }
 
@@ -52,59 +48,44 @@ function reset() {
 function undo() {
     let response = document.getElementsByClassName('response')[0]
     if(response.textContent.length === 1) {
-        response.textContent = numberOne = '0'
+        response.textContent = '0'
+        numberTwo = operator == null ? '' : '0'
+        numberOne = operator == null ? '0' : numberOne
         return 
     }
     const array = response.textContent.split('')
     array.pop()
-    const result = array.join('').split(/[\s,]+/)
-    operator = null
-    numberTwo = ''
-
-    result.map((r, index) => {
-        if(index === 0) numberOne = r
-        if(index === 1 && ["÷", "+", "-", "x"].includes(r)) operator = r
-        if(index === 2) numberTwo = r
-    })
-
-    response.textContent = numberOne + 
-                        (operator == null ? '' : ' '+operator) + 
-                        (numberTwo.length > 0 ? ' ' + numberTwo : '')  
-}
-
-
-function getEquals() {
-    operate()
-    operator = null
+    response.textContent = array.join('')
 }
 
 
 function operate() {
-    if(operator == null) {
+    if(numberTwo == '') {
         return
     }
     if(operator == '÷' && parseFloat(numberOne) !== 0 && numberTwo != '' && parseFloat(numberTwo) == 0 ) {
-        alert('')
+        alert(`It is not possible to divide ${numberOne} by 0`)
         return
     }
+    numberOne = numberOne.indexOf('.') === numberOne.length - 1 ? numberOne + '0' : numberOne
+    numberTwo = numberTwo.indexOf('.') === numberTwo.length - 1 ? numberTwo + '0' : numberTwo
     const calculation = document.getElementsByClassName("calculation")[0]
     const response = document.getElementsByClassName("response")[0]
 
     if(operator == '+') {
-        response.textContent = (parseFloat(numberOne) + parseFloat(numberTwo))
-        calculation.textContent = `${numberOne} + ${numberTwo} = ${response.textContent}` 
+        response.textContent = (parseFloat(numberOne) + parseFloat(numberTwo)).toString()
     }
     if(operator == '-') {
-        response.textContent = (parseFloat(numberOne) - parseFloat(numberTwo))
-        calculation.textContent = `${numberOne} - ${numberTwo} = ${response.textContent}` 
+        response.textContent = (parseFloat(numberOne) - parseFloat(numberTwo)).toString()
     }
     if(operator == 'x') {
-        response.textContent = (parseFloat(numberOne) * parseFloat(numberTwo))
-        calculation.textContent = `${numberOne} x ${numberTwo} = ${response.textContent}` 
+        response.textContent = (parseFloat(numberOne) * parseFloat(numberTwo)).toString()
     }
     if(operator == '÷') {
-        response.textContent = (parseFloat(numberOne) / parseFloat(numberTwo))
-        calculation.textContent = `${numberOne} ÷ ${numberTwo} = ${response.textContent}` 
+        response.textContent = (parseFloat(numberOne) / parseFloat(numberTwo)).toString()
     }
-}
 
+    calculation.textContent = `${numberOne} ${operator} ${numberTwo} = ${response.textContent}` 
+    numberOne = response.textContent
+    numberTwo = ''
+}
